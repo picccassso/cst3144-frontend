@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After School Classes</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="hero-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h1>After School Hub</h1>
+                    </div>
+                    <p class="tagline">Discover amazing classes and activities for your child</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container main-content">
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-book-reader"></i>
+                    <div>
+                        <h3>{{ lessons.length }}</h3>
+                        <p>Classes Available</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h3>{{ uniqueLocations }}</h3>
+                        <p>Locations</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <h3>{{ totalSpaces }}</h3>
+                        <p>Total Spaces</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lessons Grid -->
+            <div class="lessons-section">
+                <h2 class="section-title">Available Classes</h2>
+                <div class="lessons-grid">
+                    <div class="lesson-card" v-for="lesson in lessons" :key="lesson.id">
+                        <div class="lesson-icon-wrapper">
+                            <div class="icon-circle">
+                                <i :class="lesson.icon"></i>
+                            </div>
+                        </div>
+                        <div class="lesson-content">
+                            <h3 class="lesson-subject">{{ lesson.subject }}</h3>
+                            <div class="lesson-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-pin"></i>
+                                    <span>{{ lesson.location }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-pound-sign"></i>
+                                    <span>{{ lesson.price }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-chair"></i>
+                                    <span>{{ lesson.spaces }} spaces</span>
+                                </div>
+                            </div>
+                            <button class="btn-add-cart" disabled>
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="container">
+                <p>&copy; 2024 After School Hub. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
