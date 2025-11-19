@@ -61,11 +61,51 @@
                 </div>
             </div>
 
+            <!-- Sort Controls -->
+            <div class="sort-section">
+                <div class="sort-controls">
+                    <div class="sort-group">
+                        <label><i class="fas fa-sort"></i> Sort by:</label>
+                        <div class="sort-options">
+                            <label class="radio-option">
+                                <input type="radio" name="sortBy" value="subject" v-model="sortBy">
+                                <span>Subject</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sortBy" value="location" v-model="sortBy">
+                                <span>Location</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sortBy" value="price" v-model="sortBy">
+                                <span>Price</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sortBy" value="spaces" v-model="sortBy">
+                                <span>Availability</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="sort-group">
+                        <label><i class="fas fa-arrow-down-up"></i> Order:</label>
+                        <div class="sort-options">
+                            <label class="radio-option">
+                                <input type="radio" name="sortOrder" value="asc" v-model="sortOrder">
+                                <span>Ascending</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sortOrder" value="desc" v-model="sortOrder">
+                                <span>Descending</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Lessons Grid -->
             <div class="lessons-section">
                 <h2 class="section-title">Available Classes</h2>
                 <div class="lessons-grid">
-                    <div class="lesson-card" v-for="lesson in lessons" :key="lesson.id">
+                    <div class="lesson-card" v-for="lesson in sortedLessons" :key="lesson.id">
                         <div class="lesson-icon-wrapper">
                             <div class="icon-circle">
                                 <i :class="lesson.icon"></i>
@@ -87,7 +127,9 @@
                                     <span>{{ lesson.spaces }} spaces</span>
                                 </div>
                             </div>
-                            <button class="btn-add-cart" disabled>
+                            <button class="btn-add-cart"
+                                    :disabled="lesson.spaces === 0"
+                                    @click="addToCart(lesson)">
                                 <i class="fas fa-shopping-cart"></i>
                                 Add to Cart
                             </button>
@@ -99,7 +141,7 @@
 
         <!-- Footer -->
         <footer class="app-footer">
-            <div class="container">
+            <div class="containegr">
                 <p>&copy; 2024 After School Hub. All rights reserved.</p>
             </div>
         </footer>

@@ -84,7 +84,10 @@ createApp({
                     spaces: 5,
                     icon: 'fas fa-running'
                 }
-            ]
+            ],
+            cart: [],
+            sortBy: 'subject',
+            sortOrder: 'asc'
         };
     },
     computed: {
@@ -94,6 +97,44 @@ createApp({
         },
         totalSpaces() {
             return this.lessons.reduce((total, lesson) => total + lesson.spaces, 0);
+        },
+        sortedLessons() {
+            let sorted = [...this.lessons];
+
+            sorted.sort((a, b) => {
+                let aVal = a[this.sortBy];
+                let bVal = b[this.sortBy];
+
+                // Convert to lowercase for string comparison
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+
+                if (this.sortOrder === 'asc') {
+                    return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+                } else {
+                    return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+                }
+            });
+
+            return sorted;
+        }
+    },
+    methods: {
+        addToCart(lesson) {
+            if (lesson.spaces > 0) {
+                // Add to cart
+                this.cart.push({
+                    id: lesson.id,
+                    subject: lesson.subject,
+                    location: lesson.location,
+                    price: lesson.price
+                });
+
+                // Reduce available spaces
+                lesson.spaces--;
+            }
         }
     }
 }).mount('#app');
