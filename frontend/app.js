@@ -87,7 +87,10 @@ createApp({
             ],
             cart: [],
             sortBy: 'subject',
-            sortOrder: 'asc'
+            sortOrder: 'asc',
+            showCart: false,
+            checkoutName: '',
+            checkoutPhone: ''
         };
     },
     computed: {
@@ -119,6 +122,21 @@ createApp({
             });
 
             return sorted;
+        },
+        isValidName() {
+            // Name must contain letters only (including spaces)
+            const nameRegex = /^[A-Za-z\s]+$/;
+            return nameRegex.test(this.checkoutName);
+        },
+        isValidPhone() {
+            // Phone must contain numbers only
+            const phoneRegex = /^[0-9]+$/;
+            return phoneRegex.test(this.checkoutPhone);
+        },
+        canCheckout() {
+            return this.isValidName && this.isValidPhone &&
+                   this.checkoutName.trim() !== '' &&
+                   this.checkoutPhone.trim() !== '';
         }
     },
     methods: {
@@ -129,11 +147,36 @@ createApp({
                     id: lesson.id,
                     subject: lesson.subject,
                     location: lesson.location,
-                    price: lesson.price
+                    price: lesson.price,
+                    icon: lesson.icon
                 });
 
                 // Reduce available spaces
                 lesson.spaces--;
+            }
+        },
+        removeFromCart(index) {
+            // Get the removed item
+            const removedItem = this.cart[index];
+
+            // Find the lesson in the lessons array and restore its space
+            const lesson = this.lessons.find(l => l.id === removedItem.id);
+            if (lesson) {
+                lesson.spaces++;
+            }
+
+            // Remove from cart
+            this.cart.splice(index, 1);
+        },
+        submitOrder() {
+            if (this.canCheckout) {
+                alert(`Order submitted successfully!\n\nName: ${this.checkoutName}\nPhone: ${this.checkoutPhone}\nTotal Items: ${this.cart.length}`);
+
+                // Clear cart and form
+                this.cart = [];
+                this.checkoutName = '';
+                this.checkoutPhone = '';
+                this.showCart = false;
             }
         }
     }

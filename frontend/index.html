@@ -30,14 +30,27 @@
                         <h1>After School Hub</h1>
                     </div>
                     <p class="tagline">Discover amazing classes and activities for your child</p>
+
+                    <!-- Cart Button -->
+                    <button class="cart-toggle-btn"
+                            :disabled="cart.length === 0"
+                            @click="showCart = !showCart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span v-if="!showCart">View Cart</span>
+                        <span v-else>View Lessons</span>
+                        <span class="cart-badge" v-if="cart.length > 0">{{ cart.length }}</span>
+                    </button>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
         <div class="container main-content">
-            <!-- Stats Bar -->
-            <div class="stats-bar">
+
+            <!-- Lessons Page -->
+            <div v-if="!showCart">
+                <!-- Stats Bar -->
+                <div class="stats-bar">
                 <div class="stat-item">
                     <i class="fas fa-book-reader"></i>
                     <div>
@@ -137,6 +150,87 @@
                     </div>
                 </div>
             </div>
+            </div>
+            <!-- End Lessons Page -->
+
+            <!-- Shopping Cart Page -->
+            <div v-if="showCart">
+                <h2 class="section-title">Shopping Cart</h2>
+
+                <!-- Cart Items -->
+                <div class="cart-container" v-if="cart.length > 0">
+                    <div class="cart-grid">
+                        <div class="cart-item" v-for="(item, index) in cart" :key="index">
+                            <div class="cart-item-content">
+                                <div class="cart-icon-wrapper">
+                                    <div class="icon-circle-small">
+                                        <i :class="item.icon"></i>
+                                    </div>
+                                </div>
+                                <div class="cart-details">
+                                    <h4>{{ item.subject }}</h4>
+                                    <p><i class="fas fa-map-pin"></i> {{ item.location }}</p>
+                                    <p><i class="fas fa-pound-sign"></i> {{ item.price }}</p>
+                                </div>
+                            </div>
+                            <button class="btn-remove" @click="removeFromCart(index)">
+                                <i class="fas fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty Cart Message -->
+                <div v-else class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Add some classes to get started!</p>
+                </div>
+
+                <!-- Checkout Section -->
+                <div class="checkout-section" v-if="cart.length > 0">
+                    <div class="checkout-card">
+                        <h3>Checkout</h3>
+                        <div class="checkout-form">
+                            <div class="form-group">
+                                <label for="name">
+                                    <i class="fas fa-user"></i> Name
+                                </label>
+                                <input type="text"
+                                       id="name"
+                                       v-model="checkoutName"
+                                       placeholder="Enter your name"
+                                       class="form-input">
+                                <span class="error-message" v-if="checkoutName && !isValidName">
+                                    Name must contain letters only
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">
+                                    <i class="fas fa-phone"></i> Phone
+                                </label>
+                                <input type="text"
+                                       id="phone"
+                                       v-model="checkoutPhone"
+                                       placeholder="Enter your phone number"
+                                       class="form-input">
+                                <span class="error-message" v-if="checkoutPhone && !isValidPhone">
+                                    Phone must contain numbers only
+                                </span>
+                            </div>
+                            <button class="btn-checkout"
+                                    :disabled="!canCheckout"
+                                    @click="submitOrder">
+                                <i class="fas fa-check-circle"></i>
+                                Checkout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Shopping Cart Page -->
+
         </div>
 
         <!-- Footer -->
