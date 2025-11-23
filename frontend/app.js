@@ -3,95 +3,18 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            lessons: [
-                {
-                    id: 1,
-                    subject: 'Math',
-                    location: 'London',
-                    price: 100,
-                    spaces: 5,
-                    icon: 'fas fa-calculator'
-                },
-                {
-                    id: 2,
-                    subject: 'English',
-                    location: 'London',
-                    price: 100,
-                    spaces: 5,
-                    icon: 'fas fa-book-open'
-                },
-                {
-                    id: 3,
-                    subject: 'Math',
-                    location: 'Oxford',
-                    price: 100,
-                    spaces: 5,
-                    icon: 'fas fa-calculator'
-                },
-                {
-                    id: 4,
-                    subject: 'English',
-                    location: 'York',
-                    price: 80,
-                    spaces: 5,
-                    icon: 'fas fa-book-open'
-                },
-                {
-                    id: 5,
-                    subject: 'Music',
-                    location: 'Bristol',
-                    price: 90,
-                    spaces: 5,
-                    icon: 'fas fa-music'
-                },
-                {
-                    id: 6,
-                    subject: 'Art',
-                    location: 'London',
-                    price: 110,
-                    spaces: 5,
-                    icon: 'fas fa-palette'
-                },
-                {
-                    id: 7,
-                    subject: 'Science',
-                    location: 'Manchester',
-                    price: 95,
-                    spaces: 5,
-                    icon: 'fas fa-flask'
-                },
-                {
-                    id: 8,
-                    subject: 'History',
-                    location: 'Cambridge',
-                    price: 85,
-                    spaces: 5,
-                    icon: 'fas fa-landmark'
-                },
-                {
-                    id: 9,
-                    subject: 'Geography',
-                    location: 'Edinburgh',
-                    price: 90,
-                    spaces: 5,
-                    icon: 'fas fa-globe'
-                },
-                {
-                    id: 10,
-                    subject: 'Sports',
-                    location: 'Birmingham',
-                    price: 75,
-                    spaces: 5,
-                    icon: 'fas fa-running'
-                }
-            ],
+            lessons: [],
             cart: [],
             sortBy: 'subject',
             sortOrder: 'asc',
             showCart: false,
             checkoutName: '',
-            checkoutPhone: ''
+            checkoutPhone: '',
+            apiUrl: 'http://localhost:3000'
         };
+    },
+    mounted() {
+        this.fetchLessons();
     },
     computed: {
         uniqueLocations() {
@@ -140,6 +63,40 @@ createApp({
         }
     },
     methods: {
+        fetchLessons() {
+            fetch(`${this.apiUrl}/lessons`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Add icon to each lesson based on subject
+                    this.lessons = data.map(lesson => ({
+                        ...lesson,
+                        icon: this.getIcon(lesson.subject)
+                    }));
+                    console.log('✅ Lessons loaded from API:', this.lessons);
+                })
+                .catch(error => {
+                    console.error('❌ Error fetching lessons:', error);
+                    alert('Failed to load lessons. Please ensure the backend is running on http://localhost:3000');
+                });
+        },
+        getIcon(subject) {
+            const iconMap = {
+                'Math': 'fas fa-calculator',
+                'English': 'fas fa-book-open',
+                'Music': 'fas fa-music',
+                'Art': 'fas fa-palette',
+                'Science': 'fas fa-flask',
+                'History': 'fas fa-landmark',
+                'Geography': 'fas fa-globe',
+                'Sports': 'fas fa-running'
+            };
+            return iconMap[subject] || 'fas fa-star';
+        },
         addToCart(lesson) {
             if (lesson.spaces > 0) {
                 // Add to cart
