@@ -127,14 +127,75 @@ createApp({
         },
         submitOrder() {
             if (this.canCheckout) {
-                alert(`Order submitted successfully!\n\nName: ${this.checkoutName}\nPhone: ${this.checkoutPhone}\nTotal Items: ${this.cart.length}`);
+                // Create order object with lesson IDs from cart
+                const lessonIDs = [...new Set(this.cart.map(item => item.id))];
+                const order = {
+                    name: this.checkoutName,
+                    phone: this.checkoutPhone,
+                    lessonIDs: lessonIDs,
+                    spaces: this.cart.length
+                };
 
-                // Clear cart and form
-                this.cart = [];
-                this.checkoutName = '';
-                this.checkoutPhone = '';
-                this.showCart = false;
+                // Send POST request to backend
+                fetch(`${this.apiUrl}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(order)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('✅ Order submitted:', data);
+                    // Update lesson spaces for each lesson in cart
+                    this.updateLessonSpaces();
+                    // Show success message
+                    alert(`Order submitted successfully!\n\nName: ${this.checkoutName}\nPhone: ${this.checkoutPhone}\nTotal Items: ${this.cart.length}`);
+                    // Clear cart and form
+                    this.cart = [];
+                    this.checkoutName = '';
+                    this.checkoutPhone = '';
+                    this.showCart = false;
+                })
+                .catch(error => {
+                    console.error('❌ Error submitting order:', error);
+                    alert('Failed to submit order. Please ensure the backend is running.');
+                });
             }
+        },
+        updateLessonSpaces() {
+            // For each unique lesson in cart, send PUT request to update spaces
+            const uniqueLessons = [...new Set(this.cart.map(item => item.id))];
+
+            uniqueLessons.forEach(lessonId => {
+                const lesson = this.lessons.find(l => l.id === lessonId);
+                if (lesson) {
+                    fetch(`${this.apiUrl}/lessons/${lesson._id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ spaces: lesson.spaces })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('✅ Lesson spaces updated:', data);
+                    })
+                    .catch(error => {
+                        console.error('❌ Error updating lesson spaces:', error);
+                    });
+                }
+            });
         }
     }
 }).mount('#app');
