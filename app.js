@@ -12,7 +12,8 @@ createApp({
             checkoutPhone: '',
             apiUrl: 'https://cst3144-backend-1-niop.onrender.com',
             searchQuery: '',
-            searchResults: []
+            searchResults: [],
+            searchTimeout: null
         };
     },
     mounted() {
@@ -102,30 +103,36 @@ createApp({
             return iconMap[subject] || 'fas fa-star';
         },
         searchLessons() {
+            // Clear previous timeout
+            clearTimeout(this.searchTimeout);
+
             if (!this.searchQuery.trim()) {
                 this.searchResults = [];
                 return;
             }
 
-            fetch(`${this.apiUrl}/search?q=${encodeURIComponent(this.searchQuery)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Add icons to search results
-                    this.searchResults = data.map(lesson => ({
-                        ...lesson,
-                        icon: this.getIcon(lesson.subject)
-                    }));
-                    console.log('✅ Search results:', this.searchResults);
-                })
-                .catch(error => {
-                    console.error('❌ Error searching lessons:', error);
-                    this.searchResults = [];
-                });
+            // Debounce: wait 300ms before fetching
+            this.searchTimeout = setTimeout(() => {
+                fetch(`${this.apiUrl}/search?q=${encodeURIComponent(this.searchQuery)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Add icons to search results
+                        this.searchResults = data.map(lesson => ({
+                            ...lesson,
+                            icon: this.getIcon(lesson.subject)
+                        }));
+                        console.log('✅ Search results:', this.searchResults);
+                    })
+                    .catch(error => {
+                        console.error('❌ Error searching lessons:', error);
+                        this.searchResults = [];
+                    });
+            }, 300);
         },
         addToCart(lesson) {
             if (lesson.spaces > 0) {
