@@ -10,7 +10,7 @@ createApp({
             showCart: false,
             checkoutName: '',
             checkoutPhone: '',
-            apiUrl: 'http://localhost:3000'
+            apiUrl: 'https://cst3144-backend-1-niop.onrender.com'
         };
     },
     mounted() {
