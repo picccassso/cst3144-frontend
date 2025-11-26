@@ -74,6 +74,21 @@
                 </div>
             </div>
 
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text"
+                           v-model="searchQuery"
+                           placeholder="Search by subject or location..."
+                           class="search-input"
+                           @input="searchLessons">
+                    <button v-if="searchQuery" class="btn-clear-search" @click="searchQuery = ''">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
             <!-- Sort Controls -->
             <div class="sort-section">
                 <div class="sort-controls">

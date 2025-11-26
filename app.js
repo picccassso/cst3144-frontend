@@ -10,7 +10,9 @@ createApp({
             showCart: false,
             checkoutName: '',
             checkoutPhone: '',
-            apiUrl: 'https://cst3144-backend-1-niop.onrender.com'
+            apiUrl: 'https://cst3144-backend-1-niop.onrender.com',
+            searchQuery: '',
+            searchResults: []
         };
     },
     mounted() {
@@ -25,7 +27,9 @@ createApp({
             return this.lessons.reduce((total, lesson) => total + lesson.spaces, 0);
         },
         sortedLessons() {
-            let sorted = [...this.lessons];
+            // Use search results if searching, otherwise use all lessons
+            let source = this.searchQuery.trim() ? this.searchResults : this.lessons;
+            let sorted = [...source];
 
             sorted.sort((a, b) => {
                 let aVal = a[this.sortBy];
@@ -96,6 +100,32 @@ createApp({
                 'Sports': 'fas fa-running'
             };
             return iconMap[subject] || 'fas fa-star';
+        },
+        searchLessons() {
+            if (!this.searchQuery.trim()) {
+                this.searchResults = [];
+                return;
+            }
+
+            fetch(`${this.apiUrl}/search?q=${encodeURIComponent(this.searchQuery)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Add icons to search results
+                    this.searchResults = data.map(lesson => ({
+                        ...lesson,
+                        icon: this.getIcon(lesson.subject)
+                    }));
+                    console.log('✅ Search results:', this.searchResults);
+                })
+                .catch(error => {
+                    console.error('❌ Error searching lessons:', error);
+                    this.searchResults = [];
+                });
         },
         addToCart(lesson) {
             if (lesson.spaces > 0) {
